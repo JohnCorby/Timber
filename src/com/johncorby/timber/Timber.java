@@ -1,6 +1,3 @@
-// todo add stripped logs
-// todo get config comments working
-
 package com.johncorby.timber;
 
 import org.bukkit.Location;
@@ -66,6 +63,7 @@ public class Timber extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
+        if (!event.getPlayer().isSneaking()) return;
         // Add block to queue, checking if axe and if log
         var data = new BreakData(event.getBlock().getLocation(),
                 event.getPlayer().getInventory());
