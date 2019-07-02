@@ -1,0 +1,33 @@
+# the amount of ticks to wait before each break cycle
+break-delay: 0
+# max amount of blocks that will be broken each break cycle
+max-breaks-per-cycle: 100
+# break mode
+# classic: breaks logs only above the one you broke
+# classic_with_leaves: classic, but breaks all leaves
+# full: breaks all logs and leaves.
+# full_without_leaves: breaks all logs.
+mode: classic
+# id names for items that will be considered axes
+axe-types:
+  - wooden_axe
+  - stone_axe
+  - iron_axe
+  - diamond_axe
+  - golden_axe
+# id names for blocks that will be considered logs
+log-types:
+  - oak_log
+  - spruce_log
+  - birch_log
+  - jungle_log
+  - acacia_log
+  - dark_oak_log
+# id names for blocks that will be considered leaves
+leaves-types:
+  - oak_leaves
+  - spruce_leaves
+  - birch_leaves
+  - jungle_leaves
+  - acacia_leaves
+  - dark_oak_leaves
