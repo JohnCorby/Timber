@@ -22,10 +22,10 @@ import java.util.stream.Collectors;
 import static java.lang.Math.min;
 
 public class Timber extends JavaPlugin implements Listener {
-    private static int breakDelay;
-    private static int maxBreaksPerCycle;
-    private static Mode mode;
-    private static List<Material> axeTypes, logTypes, leavesTypes;
+    private static int BREAK_DELAY;
+    private static int MAX_BREAKS_PER_CYCLE;
+    private static Mode MODE;
+    private static List<Material> AXE_TYPES, LOG_TYPES, LEAVES_TYPES;
 
     private static Queue<BreakData> breakQueue = new ArrayDeque<>();
 
@@ -34,16 +34,16 @@ public class Timber extends JavaPlugin implements Listener {
         saveDefaultConfig();
 
         // Get config stuff
-        breakDelay = getConfig().getInt("break-delay");
-        maxBreaksPerCycle = getConfig().getInt("max-breaks-per-cycle");
-        mode = Mode.valueOf(getConfig().getString("mode").toUpperCase());
-        axeTypes = getConfig().getStringList("axe-types").stream()
+        BREAK_DELAY = getConfig().getInt("break-delay");
+        MAX_BREAKS_PER_CYCLE = getConfig().getInt("max-breaks-per-cycle");
+        MODE = Mode.valueOf(getConfig().getString("MODE").toUpperCase());
+        AXE_TYPES = getConfig().getStringList("axe-types").stream()
                 .map(Material::matchMaterial)
                 .collect(Collectors.toList());
-        logTypes = getConfig().getStringList("log-types").stream()
+        LOG_TYPES = getConfig().getStringList("log-types").stream()
                 .map(Material::matchMaterial)
                 .collect(Collectors.toList());
-        leavesTypes = getConfig().getStringList("leaves-types").stream()
+        LEAVES_TYPES = getConfig().getStringList("leaves-types").stream()
                 .map(Material::matchMaterial)
                 .collect(Collectors.toList());
 
@@ -53,10 +53,10 @@ public class Timber extends JavaPlugin implements Listener {
         // Init break queue loop
         new BukkitRunnable() {
             public void run() {
-                for (var i = 0; i < min(breakQueue.size(), maxBreaksPerCycle); i++)
+                for (var i = 0; i < min(breakQueue.size(), MAX_BREAKS_PER_CYCLE); i++)
                     breakQueue.remove().doBreak();
             }
-        }.runTaskTimer(this, 0, breakDelay);
+        }.runTaskTimer(this, 0, BREAK_DELAY);
 
         getLogger().info("Timber enabled");
     }
@@ -109,15 +109,15 @@ public class Timber extends JavaPlugin implements Listener {
         }
 
         private boolean isAxe() {
-            return axeTypes.contains(item.getType());
+            return AXE_TYPES.contains(item.getType());
         }
 
         private boolean isLog() {
-            return logTypes.contains(location.getBlock().getType());
+            return LOG_TYPES.contains(location.getBlock().getType());
         }
 
         private boolean isLeaves() {
-            return leavesTypes.contains(location.getBlock().getType());
+            return LEAVES_TYPES.contains(location.getBlock().getType());
         }
 
         private boolean isValid(Filter filter) {
@@ -147,7 +147,7 @@ public class Timber extends JavaPlugin implements Listener {
 
         private void addNear() {
             // Add near locations to queue
-            switch (mode) {
+            switch (MODE) {
                 case CLASSIC:
                     addRelative(BlockFace.UP, Filter.LOG);
                     break;
