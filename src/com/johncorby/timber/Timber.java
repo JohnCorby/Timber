@@ -3,6 +3,7 @@ package com.johncorby.timber;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -179,7 +180,6 @@ public class Timber extends JavaPlugin implements Listener {
         }
 
         private void doBreak() {
-            // Add 1 damage the tool
             var meta = (Damageable) item.getItemMeta();
             // check if should be broken (durability = 0)
             if (meta.getDamage() >= item.getType().getMaxDurability()) {
@@ -188,9 +188,15 @@ public class Timber extends JavaPlugin implements Listener {
                 inventory.remove(item);
                 return;
             }
-            // add 1 damage
-            meta.setDamage(meta.getDamage() + 1);
-            item.setItemMeta((ItemMeta) meta);
+
+            // account for unbreaking
+            // see https://www.spigotmc.org/threads/setdurability-doesnt-take-unbreaking-enchantment-into-account.306168/
+            double level = item.getEnchantmentLevel(Enchantment.DURABILITY);
+            if (Math.random() < 1 / (level + 1)) {
+                // add 1 damage
+                meta.setDamage(meta.getDamage() + 1);
+                item.setItemMeta((ItemMeta) meta);
+            }
 
             // Break the block and drop items
             location.getBlock().breakNaturally(item);
