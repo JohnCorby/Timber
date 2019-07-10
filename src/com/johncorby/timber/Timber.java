@@ -36,7 +36,7 @@ public class Timber extends JavaPlugin implements Listener {
         // Get config stuff
         BREAK_DELAY = getConfig().getInt("break-delay");
         MAX_BREAKS_PER_CYCLE = getConfig().getInt("max-breaks-per-cycle");
-        MODE = Mode.valueOf(getConfig().getString("MODE").toUpperCase());
+        MODE = Mode.valueOf(getConfig().getString("mode").toUpperCase());
         AXE_TYPES = getConfig().getStringList("axe-types").stream()
                 .map(Material::matchMaterial)
                 .collect(Collectors.toList());
