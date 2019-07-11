@@ -2,7 +2,6 @@ package com.johncorby.timber;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.BlockFace;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -81,10 +80,41 @@ public class Timber extends JavaPlugin implements Listener {
     private enum Filter {
         LOG,
         LEAVES,
-        BOTH
     }
 
-    private class BreakData {
+    private static class BreakData {
+        private static final int[][] DIRECTIONS_UP = {
+                {0, 1, 0}
+        };
+        private static final int[][] DIRECTIONS_ALL = {
+                {-1, -1, -1},
+                {0, -1, -1},
+                {1, -1, -1},
+                {-1, 0, -1},
+                {0, 0, -1},
+                {1, 0, -1},
+                {-1, 1, -1},
+                {0, 1, -1},
+                {1, 1, -1},
+                {-1, -1, 0},
+                {0, -1, 0},
+                {1, -1, 0},
+                {-1, 0, 0},
+                {1, 0, 0},
+                {-1, 1, 0},
+                {0, 1, 0},
+                {1, 1, 0},
+                {-1, -1, 1},
+                {0, -1, 1},
+                {1, -1, 1},
+                {-1, 0, 1},
+                {0, 0, 1},
+                {1, 0, 1},
+                {-1, 1, 1},
+                {0, 1, 1},
+                {1, 1, 1}
+        };
+
         private final Location location;
         private final PlayerInventory inventory;
         private final ItemStack item;
@@ -130,51 +160,38 @@ public class Timber extends JavaPlugin implements Listener {
                     return isLog();
                 case LEAVES:
                     return isLeaves();
-                case BOTH:
-                    return isLog() || isLeaves();
                 default:
                     return false;
             }
         }
 
-        private void addRelative(BlockFace direction, Filter filter) {
-            var newData = new BreakData(location.clone().add(
-                    direction.getModX(),
-                    direction.getModY(),
-                    direction.getModZ()
-            ), inventory);
-            if (newData.isValid(filter)) breakQueue.add(newData);
+        private void addRelative(int[][] directions, Filter filter) {
+            for (var direction : directions) {
+                var newData = new BreakData(location.clone().add(
+                        direction[0],
+                        direction[1],
+                        direction[2]
+                ), inventory);
+                if (newData.isValid(filter)) breakQueue.add(newData);
+            }
         }
 
         private void addNear() {
             // Add near locations to queue
             switch (MODE) {
                 case CLASSIC:
-                    addRelative(BlockFace.UP, Filter.LOG);
+                    addRelative(DIRECTIONS_UP, Filter.LOG);
                     break;
                 case CLASSIC_WITH_LEAVES:
-                    addRelative(BlockFace.UP, Filter.BOTH);
-                    addRelative(BlockFace.DOWN, Filter.LEAVES);
-                    addRelative(BlockFace.NORTH, Filter.LEAVES);
-                    addRelative(BlockFace.SOUTH, Filter.LEAVES);
-                    addRelative(BlockFace.EAST, Filter.LEAVES);
-                    addRelative(BlockFace.WEST, Filter.LEAVES);
+                    addRelative(DIRECTIONS_UP, Filter.LOG);
+                    addRelative(DIRECTIONS_ALL, Filter.LEAVES);
                     break;
                 case FULL:
-                    addRelative(BlockFace.UP, Filter.BOTH);
-                    addRelative(BlockFace.DOWN, Filter.BOTH);
-                    addRelative(BlockFace.NORTH, Filter.BOTH);
-                    addRelative(BlockFace.SOUTH, Filter.BOTH);
-                    addRelative(BlockFace.EAST, Filter.BOTH);
-                    addRelative(BlockFace.WEST, Filter.BOTH);
+                    addRelative(DIRECTIONS_ALL, Filter.LOG);
+                    addRelative(DIRECTIONS_ALL, Filter.LEAVES);
                     break;
                 case FULL_WITHOUT_LEAVES:
-                    addRelative(BlockFace.UP, Filter.LOG);
-                    addRelative(BlockFace.DOWN, Filter.LOG);
-                    addRelative(BlockFace.NORTH, Filter.LOG);
-                    addRelative(BlockFace.SOUTH, Filter.LOG);
-                    addRelative(BlockFace.EAST, Filter.LOG);
-                    addRelative(BlockFace.WEST, Filter.LOG);
+                    addRelative(DIRECTIONS_ALL, Filter.LOG);
                     break;
             }
         }
